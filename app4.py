@@ -2,7 +2,6 @@ import openpyxl
 from datetime import datetime
 import os
 from openpyxl.drawing.image import Image
-from openpyxl import load_workbook
 
 
 # 1.請求書のダミーデータを読み込む
