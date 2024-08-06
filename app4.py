@@ -11,14 +11,14 @@ ws = wb.active
 
 # valuesにワークシートの全てのセルの値をリストとして取得
 values = list(ws.values)
-
+# 何行あるかとしてのデータが欲しいからここで取得している
 lastrow = len(values)
 
 # 2.請求書のテンプレートを読み込む
 wb = openpyxl.load_workbook("files/invoice.xlsx", data_only=True)
 ws = wb.active
 
-# 3.日付の取得やフォルダの作成
+# 3.日付やデータの取得やフォルダの作成
 
 # 現在の日付時刻を取得
 current_date = datetime.now()
@@ -47,9 +47,10 @@ invoice_number = 1
 # 4.繰り返し処理で請求書テンプレートに値を入れていく
 
 for index in range(lastrow):
-    # 1行目がヘッダーだから、取得しないようにする
+    # 1行目がヘッダーだから、取得しないようにする（indexがもし0じゃないなら)
     if not index == 0:
         # 12行目が請求金額であるため、そこに値が存在しないため、スキップする（繰り替え処理をしない）
+        # もし12行目(請求金額)が、0なら、スキップ（continue)してプログラムを続けるよ
         if values[index][12] is None:
             continue
 
@@ -95,7 +96,7 @@ for index in range(lastrow):
         copy_ws["J22"].value = values[index][54]
         copy_ws["J23"].value = values[index][59]
 
-        # 数量
+        # 単位
         copy_ws["K14"].value = values[index][15]
         copy_ws["K15"].value = values[index][20]
         copy_ws["K16"].value = values[index][25]
