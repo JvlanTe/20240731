@@ -2,6 +2,7 @@ import openpyxl
 from datetime import datetime
 import os
 from openpyxl.drawing.image import Image
+import win32com.client as win32
 
 
 # 1.請求書のダミーデータを読み込む
@@ -139,3 +140,35 @@ for index in range(lastrow):
         copy_ws.add_image(img, "P5")
 
 wb.save(output_file)
+
+
+def excel_to_pdf(sheet_name, output_pdf):
+    # excelを起動
+    excel = win32.gencache.EnsureDispatch("Excel.Application")
+    excel.Visible = False
+
+    # 指定されたExcelファイルを取得(この場合さっき作った請求書のやつ)
+    wb = excel.Workbooks.Open(os.path.abspath(output_file))
+
+    # 指定されたシートを取得(この場合株式会社AとかBとかCとかそういうやつ)
+    ws = wb.Sheets(sheet_name)
+
+    ws.PageSetup.Zoom = False
+    ws.PageSetup.FitToPagesWide = 1
+
+    # 0がpdf形式になる
+    ws.ExportAsFixedFormat(0, os.path.abspath(output_pdf))
+
+    # このワークブック閉じる作業が大事(falseは、何も保存せずに終了している)
+    wb.Close(False)
+
+    # excelを閉じる
+    excel.Application.Quit()
+
+
+# 各シートごとにPDFを作成
+for sheet in wb.sheetnames:
+    # 各シートに対するPDFファイルのpathを作成
+    pdf_file = f"{output_folder}/{sheet}.pdf"
+
+    excel_to_pdf(sheet, pdf_file)
